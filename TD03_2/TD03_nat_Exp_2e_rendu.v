@@ -135,7 +135,7 @@ Proof. reflexivity. Qed.
     les variables correspondant à x0, x1, x2... ont été respectivement
     renommées en x1, x2, x3...  *)
 
-Fixpoint renomme (a: aexp) : aexp :=
+(*Fixpoint renomme (a: aexp) : aexp := .*)
   
 
 (** Définir une fonction [decale] qui prend un état [s] et rend
@@ -160,7 +160,17 @@ Definition decale (s : state) : state := Cons 0 s.
     - des opérateurs booléens binaires Band et Bor
     - un opérateur de comparaison représentant le test d'égalité
       entre deux expressions arithmétiques
-*)
+ *)
+
+Inductive bexp :=
+| Btrue : bool -> bexp
+| Bfalse : bool -> bexp
+| Bnot : bool -> bexp
+| Band : bool -> bool -> bexp
+| Bor : bool -> bool -> bexp
+| Bcomp : aexp -> aexp -> bexp
+.
+
 
 (** L'environnenent initial de Coq comprend, en plus de [nat],
     un type énuméré nommé [bool à deux valeurs nommées [true] et [false] 
@@ -179,6 +189,16 @@ Definition decale (s : state) : state := Cons 0 s.
     L'opération de comparaison entre deux entiers devra aussi être programmée.
 
     Définir une fonction d'évaluation sur bexp en s'appuyant sur ces fonctions.
-*)
+ *)
+
+Print bool.
+
+Fixpoint Beval (b:bexp) : bool :=
+  match b with
+  | Btrue => true
+  | Bfalse => false
+                |
+
+
 
 (* ----------------------------------------------------------------------- *)
