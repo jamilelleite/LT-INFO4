@@ -63,8 +63,8 @@ Inductive aexp :=
   (1 + x2) * 3 et  (x0 * 2) + x3
  *)
 
-Definition aexp_ex1 : aexp. Admitted.
-Definition aexp_ex2 : aexp. Admitted.
+Definition exp_1 := Amu (Apl (Aco 1) (Ava 2)) (Aco 3).
+Definition exp_2 := Apl (Amu (Ava 0) (Aco 2)) (Ava 3).
 
 (** Pour évaluer une expression représentée par un tel AST,
     on considère un *état*, c'est à dire une association entre
@@ -111,12 +111,22 @@ Proof. reflexivity. Qed.
 (** Même si la fonction get ci-dessus a été laissée 'Admitted", elle est 
     utilisable dans les questions suivantes.  *)
 
-Fixpoint eval (a: aexp) (s: state) : nat. Admitted.
+Fixpoint eval (a: aexp) (s: state) : nat :=
+  match a with
+  | Ava n => get n s
+  | Aco n => n
+  | Apl n x => (eval n s) + (eval x s)
+  | Amu n x => (eval n s) * (eval x s)
+  | Amo n x => (eval n s) - (eval x s)
+  end.
+
+Definition aexp_ex1 := Amu (Apl (Aco 1) (Ava 2)) (Aco 3).
+Definition aexp_ex2 := Apl (Amu (Ava 0) (Aco 2)) (Ava 3).
 
 Example eval_ex1_ex1 : eval aexp_ex1 s_ex1 = 27.
-Proof. Admitted. (* reflexivity. Qed. *)
+Proof. reflexivity. Qed. 
 Example eval_ex2_ex1 : eval aexp_ex2 s_ex1 = 6.
-Proof. Admitted. (* reflexivity. Qed. *)
+Proof. reflexivity. Qed.
 
 
 (* ----------------------------------------------------------------------- *)
@@ -125,7 +135,8 @@ Proof. Admitted. (* reflexivity. Qed. *)
     les variables correspondant à x0, x1, x2... ont été respectivement
     renommées en x1, x2, x3...  *)
 
-Fixpoint renomme (a: aexp) : aexp. Admitted.
+Fixpoint renomme (a: aexp) : aexp :=
+  
 
 (** Définir une fonction [decale] qui prend un état [s] et rend
     l'état dans lequel la valeur de x0 est 0, 
