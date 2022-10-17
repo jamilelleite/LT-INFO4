@@ -197,10 +197,19 @@ Fixpoint Beval (b:bexp) : bool :=
   match b with
   | Btrue a =>  true
   | Bfalse a => false
-  | Bnot a => Beval ~a
-  | Band a b => Beval a /\ Beval b
-  | Bor a b => Beval a \/ Beval b
-  | Bcomp a b => Beval a = Beval b
+  | Band a b => match (a,b) with
+                | (true, true) => true
+                | _ => false
+                end
+  | Bor a b => match (a,b) with
+               | (false, false) => false
+               | _ => true
+               end
+  | Bnot a => match a with
+              | true => false
+              | false => true
+              end
+  | Bcomp e x =>
   end.
 
 
