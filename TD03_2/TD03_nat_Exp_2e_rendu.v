@@ -209,9 +209,12 @@ Fixpoint Beval (b:bexp) : bool :=
               | true => false
               | false => true
               end
-  | Bcomp e x =>
-  end.
+  | Bcomp e x => match (a,b) with
+                 | (false,false) => true
+                 | (true, true) => true
+                 | _ => false
 
+end.
 
 
 
