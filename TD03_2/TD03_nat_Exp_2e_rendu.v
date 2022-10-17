@@ -195,9 +195,14 @@ Print bool.
 
 Fixpoint Beval (b:bexp) : bool :=
   match b with
-  | Btrue => true
-  | Bfalse => false
-                |
+  | Btrue a =>  true
+  | Bfalse a => false
+  | Bnot a => Beval ~a
+  | Band a b => Beval a /\ Beval b
+  | Bor a b => Beval a \/ Beval b
+  | Bcomp a b => Beval a = Beval b
+  end.
+
 
 
 
