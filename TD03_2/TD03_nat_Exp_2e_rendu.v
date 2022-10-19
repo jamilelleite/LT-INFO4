@@ -135,7 +135,14 @@ Proof. reflexivity. Qed.
     les variables correspondant à x0, x1, x2... ont été respectivement
     renommées en x1, x2, x3...  *)
 
-(*Fixpoint renomme (a: aexp) : aexp := .*)
+Fixpoint renomme (a: aexp) : aexp :=
+  match a with
+  | Ava n => Ava (n+1)
+  | Aco n => Aco n
+  | Apl n x => Apl (renomme n) (renomme x)
+  | Amu n x => Amu (renomme n) (renomme x)
+  | Amo n x => Amo (renomme n) (renomme x)
+  end.               
   
 
 (** Définir une fonction [decale] qui prend un état [s] et rend
@@ -150,6 +157,15 @@ Definition decale (s : state) : state := Cons 0 s.
 (** Démontrer qu'évaluer une expression renommée dans un environnement
     décalé rend la même chose qu'avant *)
 
+Example ex_dec_ren: eval (renomme aexp_ex1) (decale s_ex1) = eval aexp_ex1 s_ex1.
+Proof. reflexivity. Qed.
+
+(*Theorem dec_ren: forall a s, eval (renomme a) (decale s) = eval a s.
+Proof.
+  intros a s.
+  induction a.
+  - reflexivity. 
+    - destruct s. cbn [renomme]. cbn [eval].  . cbn []. cbn [].*)
 (* ----------------------------------------------------------------------- *)
 (** ** Expressions booléennes *)
 
@@ -163,11 +179,12 @@ Definition decale (s : state) : state := Cons 0 s.
  *)
 
 Inductive bexp :=
-| Btrue : bool -> bexp
-| Bfalse : bool -> bexp
-| Bnot : bool -> bexp
-| Band : bool -> bool -> bexp
-| Bor : bool -> bool -> bexp
+| Btrue : bexp
+| Bfalse : bexp
+| Bnot : bexp -> bexp
+| Band : bexp -> bexp -> bexp
+| Bor : bexp -> bexp -> bexp
+| Beq : bexp -> bexp -> bexp
 | Bcomp : aexp -> aexp -> bexp
 .
 
@@ -192,29 +209,50 @@ Inductive bexp :=
  *)
 
 Print bool.
+Search bool.
 
-Fixpoint Beval (b:bexp) : bool :=
+
+Definition b_neg (a: bool) : bool :=
+  match a with
+  | true =>  false
+  | false => true
+  end.
+
+Definition b_and (a: bool) (b:bool) : bool :=
+  match (a,b) with
+  | (true, true) => true
+  | _ => false
+  end.
+
+Definition b_or (a:bool) (b:bool) : bool :=
+  match (a,b) with
+  | (false, false) => false
+  | _ => true
+  end.
+
+Definition b_eq (a:bool) (b:bool) : bool :=
+  match (a,b) with
+  | (true, true) => true
+  | (false, false) => true
+  | _ => false
+  end.
+
+Definition n_eq (a: nat) (b: nat) : bool :=
+
+
+
+
+Fixpoint beval (b: bexp): bool :=
   match b with
-  | Btrue a =>  true
-  | Bfalse a => false
-  | Band a b => match (a,b) with
-                | (true, true) => true
-                | _ => false
-                end
-  | Bor a b => match (a,b) with
-               | (false, false) => false
-               | _ => true
-               end
-  | Bnot a => match a with
-              | true => false
-              | false => true
-              end
-  | Bcomp e x => match (a,b) with
-                 | (false,false) => true
-                 | (true, true) => true
-                 | _ => false
-
+  | Btrue => true
+  | Bfalse => false
+  | Bnot a => b_neg (beval a) 
+  | Band a1 a2 => b_and (beval a1) (beval a2)
+  | Bor a1 a2 => b_or (beval a1) (beval a2)
+  | Beq a1 a2 => b_eq (beval a1) (beval a2)
+  | _ => true
 end.
+
 
 
 
