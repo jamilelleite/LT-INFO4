@@ -1,3 +1,7 @@
+(** Jamile Lima Leite **)
+(** Temps passé: 30 minutes **)
+(** Difficultés avec la question pour créer fonction 'eval' **)
+
 (**
 Deux objectifs dans ce TD :
 - deux structures linéaires qui serviront constamment,
@@ -72,11 +76,11 @@ Theorem app_Nilc_r : forall l, app l Nilc = l.
 Proof.
   intro l. cbn [app]. (* aucun effet : pourquoi ? *)
   (** terminer au moyen d'une preuve par récurrence *)
-  induction l as [(*Consc*) | (*Nilc*)].
-  cbn[app]. reflexivity.
-  cbn[app]. rewrite IHl.
-  reflexivity.
   (* à compléter *)
+  induction l as [(*Nilc*)
+                 |(*Consc*) x u Hrec].
+  - cbn [app]. reflexivity.
+  - cbn [app]. rewrite Hrec. reflexivity.
 Qed.
 
 (** Lemme fondamental : app est associative *)
@@ -86,10 +90,9 @@ Proof.
   intros u v w. (** équivalent à intro u. intro v. intro w. *)
   (** Comme app analyse son premier argument on tente une récurrence sur u *)
   induction u as [ | x u' Hrecu'].
-  cbn[app]. reflexivity.
-  cbn[app]. rewrite Hrecu'.
-  reflexivity.
   (* à compléter *)
+  - cbn [app]. reflexivity.
+  - cbn [app]. rewrite Hrecu'. reflexivity.
 Qed.
 
 (* ----------------------------------------------------------------------- *)
@@ -103,10 +106,12 @@ Fixpoint renv u : listc :=
 
 (* Penser à utiliser les théorèmes précédents *)
 Lemma app_renv : forall u v, renv (app u v) = app (renv v) (renv u).
+Proof.
   (* à compléter *)
 Admitted.
 
 Lemma renv_renv : forall u, renv (renv u) = u.
+Proof.
   (* à compléter *)
 Admitted.
 
@@ -142,42 +147,41 @@ Check (S (S O)). (** représente l'entier noté usuellement 2 *)
 
 Fixpoint plus (n m : nat) : nat :=
   match n with
-    | O => m
-    | S k  => S (plus k m)
-end.
+  | O => m
+  | S x => S (plus x m)
+  end.
+
 (** remplacer ". Admitted" par " := bonne_définition ." *)
 
 Theorem plus_0_l : forall n, plus O n = n.
-  intro c.
-  cbn[plus].
-  reflexivity.
   (* à compléter *)
+Proof.
+  intro n.
+  cbn [plus]. reflexivity.
 Qed.
 
 Theorem plus_0_r : forall n, plus n O = n.
-  Proof.
-  intro c.
-  induction c as [(*O*) | (*S*) X Hrec].
-  cbn[plus].
-  reflexivity.
-  cbn[plus]. rewrite Hrec.
-  reflexivity.
   (* à compléter *)
+Proof.
+  intro n.
+  induction n as [(*O*)
+    |(*S*) x Hrec].
+  - cbn [plus]. reflexivity.
+    - cbn [plus]. rewrite Hrec. reflexivity.
 Qed.
 
 
 (** Pour les exercices suivants une récurrence structurelle simple suffit,
     il faut bien choisir la variable qur laquelle elle porte *)
 
-  Theorem plus_assoc : forall n m p, plus n (plus m p) = plus (plus n m) p.
-    intro c.
-    intro m.
-    intro n.
-    induction c as [ | x u' Hrecu].
-    cbn[plus]. reflexivity.
-    cbn[plus]. rewrite u'.
-    reflexivity.
-    (* à compléter *)
+Theorem plus_assoc : forall n m p, plus n (plus m p) = plus (plus n m) p.
+  (* à compléter *)
+Proof.
+  intros n m p.
+  induction n as [(*O*)
+    |(*S*) x Hrec].
+  - cbn [plus]. reflexivity.
+  - cbn [plus]. rewrite Hrec. reflexivity.
 Qed.
 
 (* ----------------------------------------------------------------------- *)
@@ -185,7 +189,13 @@ Qed.
 
 Theorem plus_Sm_r : forall n m, plus n (S m) = S (plus n m).
   (* à compléter *)
-Admitted.
+Proof.
+  intros n m.
+  induction n as [(*O*)
+    |(*S*) x Hrec].
+  - cbn [plus]. reflexivity.
+  - cbn [plus]. rewrite Hrec. reflexivity.
+Qed.
 
 (* Penser à utliser les théorèmes précédents *)
 Theorem plus_com : forall n m, plus n m = plus m n.
@@ -208,7 +218,8 @@ Admitted.
 
 (** On annule ce qui a été fait depuis notre définition de nat,
     pou retrouver la situation fournie par Coq. *)
-Reset nat.
+
+Reset nat. 
 Print nat.
 
 (** Mais on a dispose alors facilités de notation, par exemple,
@@ -252,6 +263,9 @@ Inductive aexp :=
   (1 + x2) * 3 et  (x1 * 2) + x3
  *)
 
+Definition exp_1 := Amu (Apl (Aco 1) (Ava 2)) (Aco 3).
+Definition exp_2 := Apl (Amu (Ava 1) (Aco 2)) (Ava 3).
+
 
 (** Pour évaluer une expression représentée par un tel AST,
     on considère un *état*, c'est à dire une association entre
@@ -291,8 +305,10 @@ Fixpoint get (i: nat) (s: state) : nat. Admitted.
 Fixpoint eval (a: aexp) (s: state) : nat :=
   match a with
   | Ava n => get n s
-  | Aco n => get n s
-  | _ => get 1 s
+  | _ => 
+(** pour le cas où il n'y a pas de correspondence de valeur de state, puisque 
+    c'est pas un aexp de variable, qu'est-ce que devrait être le retour de
+    la fonction? **)
   end.
 
 (* ----------------------------------------------------------------------- *)
