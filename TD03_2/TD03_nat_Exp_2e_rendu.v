@@ -137,7 +137,7 @@ Proof. reflexivity. Qed.
 
 Fixpoint renomme (a: aexp) : aexp :=
   match a with
-  | Ava n => Ava (n+1)
+  | Ava n => Ava (S n)
   | Aco n => Aco n
   | Apl n x => Apl (renomme n) (renomme x)
   | Amu n x => Amu (renomme n) (renomme x)
@@ -160,12 +160,16 @@ Definition decale (s : state) : state := Cons 0 s.
 Example ex_dec_ren: eval (renomme aexp_ex1) (decale s_ex1) = eval aexp_ex1 s_ex1.
 Proof. reflexivity. Qed.
 
-(*Theorem dec_ren: forall a s, eval (renomme a) (decale s) = eval a s.
+Theorem dec_ren: forall a s, eval (renomme a) (decale s) = eval a s.
 Proof.
   intros a s.
   induction a.
   - reflexivity. 
-    - destruct s. cbn [renomme]. cbn [eval].  . cbn []. cbn [].*)
+  - reflexivity.
+  - cbn [renomme]. cbn [eval]. rewrite IHa1. rewrite IHa2. reflexivity.
+  - cbn [renomme]. cbn [eval]. rewrite IHa1. rewrite IHa2. reflexivity.
+  - cbn [renomme]. cbn [eval]. rewrite IHa1. rewrite IHa2. reflexivity.
+    Qed.
 (* ----------------------------------------------------------------------- *)
 (** ** Expressions booléennes *)
 
@@ -237,20 +241,22 @@ Definition b_eq (a:bool) (b:bool) : bool :=
   | _ => false
   end.
 
-Definition n_eq (a: nat) (b: nat) : bool :=
+Fixpoint n_eq (a: nat) (b: nat) : bool :=
+  match (a,b) with
+  | (0,0) => true
+  | (S n1, S n2) => n_eq n1 n2
+  | (_, _) => false
+  end.
 
-
-
-
-Fixpoint beval (b: bexp): bool :=
+Fixpoint beval (b: bexp) (s: state) : bool :=
   match b with
   | Btrue => true
   | Bfalse => false
-  | Bnot a => b_neg (beval a) 
-  | Band a1 a2 => b_and (beval a1) (beval a2)
-  | Bor a1 a2 => b_or (beval a1) (beval a2)
-  | Beq a1 a2 => b_eq (beval a1) (beval a2)
-  | _ => true
+  | Bnot a => b_neg (beval a s) 
+  | Band a1 a2 => b_and (beval a1 s) (beval a2 s)
+  | Bor a1 a2 => b_or (beval a1 s) (beval a2 s)
+  | Beq a1 a2 => b_eq (beval a1 s) (beval a2 s)
+  | Bcomp ae1 ae2 => n_eq (eval ae1 s) (eval ae2 s)
 end.
 
 
