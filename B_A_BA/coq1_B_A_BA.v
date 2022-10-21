@@ -1,3 +1,5 @@
+(** Jamile Lima Leite **)
+
 (** * INITIATION A COQ *)
 
 (**
@@ -88,7 +90,7 @@ Theorem ex1_coul_suiv : coul_suiv (coul_suiv Vert) = Rouge.
 Proof. cbn [coul_suiv]. reflexivity. Qed.
 
 (** Remarque : on peut énoncer une théorème à prouver au moyen d'autres
-mots-clé, notamment Lemma (pour un résultat auxiliaire) ou Example
+mots-clé, notamment Lemma (pour un résultat auxiliaure) ou Example
 (pour un théorème très simple servant à tester le résultat d'une fonction
 sur une entrée particulière.
 Ces mots-clé sont équivalents, le choix de l'un ou l'autre est affaire de
@@ -173,23 +175,12 @@ Section sec_cas.
     (** reflexivity ne fonctionne pas. *)
     Fail reflexivity.
     (** Il faut raisonner par cas sur les trois valeurs de [c] possibles *)
-    (** Cela va donner lieu à trois sous-buts, un pour chaque cas.
-        Ils se traitent de manière identique, on montre ci-dessous
-        quelques raccourcis possibles qui seront expliqués en cours. *)
+    (** Cela va donner lieu à trois sous-buts, un pour chaque cas. *)
     destruct c as [ (*Vert*) | (*Orange*) | (*Rouge*) ].
     - cbn [coul_suiv]. reflexivity.
-    - cbn. reflexivity.
-    - reflexivity.
+    - cbn [coul_suiv]. reflexivity.
+    - cbn [coul_suiv]. reflexivity.
   Qed.
-
-  (** Remarque : la tactique destruct fonctionne comme un match dont
-      les constructeurs, non nommés, sont traités dans l'ordre indiqué
-      dans la déclaration du type concenré, ici coulfeu.
-      En fait, destruct *fabrique* un match, ce que l'on peut voir
-      en affichant le contenu de la preuve
-      (par Print, comme vu en cours ; mais attention, ce qui est
-      affiché est compliqué, se contenter à ce stade de voir la forme
-      générale.) *)
 
 End sec_cas.
 
@@ -243,9 +234,10 @@ Section sec_variante_th_crou_gen.
   Theorem th_crou_demi_gen : c = Rouge -> coul_suiv c = Vert.
   Proof.
     (** à compléter *)
-    intro c0rou.
-    rewrite c0rou. cbn [coul_suiv]. reflexivity.
-
+    intro c0.
+    rewrite c0.
+    cbn [coul_suiv].
+    reflexivity.
   (* Quand une démonstration est incomplète, on peut passer à la suite
    * à l'aide de Admitted  au lieu de Qed.
    * Ne pas oublier de remplacer Admitted par Qed quand on a réussi ! *)
@@ -257,12 +249,12 @@ End sec_variante_th_crou_gen.
 
 Lemma suivsuivsuiv_id : forall c:coulfeu, coul_suiv (coul_suiv (coul_suiv c))=c.
 Proof.
-(** à compléter ici *)
+  (** à compléter ici *)
   intro c0.
-  destruct c0 as [(*Vert*) | (*Orange*) | (*Rouge*)].
-  cbn [coul_suiv]. reflexivity.
-  cbn [coul_suiv]. reflexivity.
-  cbn [coul_suiv]. reflexivity.
+  destruct c0 as [(*Rouge*) | (*Orange*) | (*Vert*)].
+  - cbn [coul_suiv]. reflexivity.
+  - cbn [coul_suiv]. reflexivity.
+  - cbn [coul_suiv]. reflexivity.
 Qed.
 
 (** ** Type inductif et récurrence structurelle : arbres binaires tricolores *)
@@ -270,6 +262,10 @@ Qed.
 Inductive arbin : Set :=
   | F : coulfeu -> arbin
   | N : arbin -> arbin -> arbin.
+
+(**type arbin =
+|F of coulfeu
+|N of arbin * arbin **)
 
 (**
 Pour définir une fonction récursive (l'équivalent de let rec
@@ -292,7 +288,7 @@ Proof.
   destruct a as [ (* F *) c
                 | (* N *) a1 a2 ].
   - cbn [renva]. reflexivity.
-  - cbn [renva].
+  - cbn [renva]. Fail reflexivity.
     (** Il apparaît qu'un simple raisonnement par cas est insuffisant, *)
     (** donc on arrete tout... *)
  Abort.
@@ -309,18 +305,9 @@ Proof.
        Hrec_a1 pour celle sur a1 et Hrec_a2 pour celle sur a2 *)
   induction a as [ (* F *) c
                  | (* N *) a1 Hrec_a1 a2 Hrec_a2 ].
+  (** à completer ici **)
   - cbn [renva]. reflexivity.
-  - cbn [renva].
-    rewrite Hrec_a1.
-    rewrite Hrec_a2.
-   reflexivity.
-    
-    (* à compléter *)
-
-
-
-
+  - cbn [renva]. rewrite Hrec_a1. rewrite Hrec_a2. reflexivity.
 Qed.
 
-(** J'ai eu un problème avec mon emacs qui m'a obligé à faire tout les exercices sans pouvoir les tester. Les deux premiers cas étant très similaire, voir identique à ce qui avait été fait avant, je suis assez sûre au point de changer le "Admitted" en "Qed". Mais je ne sais pas trop pour le troisième**)
 (** Fin du travail à faire à la maison. *)

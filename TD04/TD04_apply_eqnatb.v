@@ -77,20 +77,25 @@ Section sec_ABC.
      tactiques pour voir la preuve en train de se former. *)
   Lemma impl_trans:
     (A -> B) -> (B -> C) -> (A -> C).
+<<<<<<< HEAD
   Proof.
     (** À compléter -> intro , refine , intro *)
     intro a. Show Proof.
     refine (fun b => _). Show Proof.
     intro c. Show Proof.
+    (*refine (b _). Show Proof.
+    refine (a _). refine c. *)   
     (** À compléter -> refine , apply , refine *)
-    refine (b (a c)).  Show Proof.
-    
-  Qed.
+    refine (b _). apply a. refine c.
+    (*refine (b (a c)).*)
+ Qed.
+>>>>>>> 06e430f274fdc808c34a953417c879e2818d739c
 
   (** Preuve à faire uniquement avec intro/apply *)
   Lemma combi_S:   (A -> B -> C) -> (A -> B) -> A -> C.
   Proof.
     (* À compléter *)
+<<<<<<< HEAD
     intros a b c.
     apply (a c).
     apply (b c).
@@ -103,9 +108,15 @@ Section sec_ABC.
     (forall n:nat, P n -> R n).
   Proof.
     (* À compléter *)
+<<<<<<< HEAD
     intros a b c d. Show Proof.
     apply ((b c) ((a c) d)).
   Qed.
+=======
+    intros pq qr n p.
+    apply qr. apply pq. apply p.
+ Qed.
+>>>>>>> 06e430f274fdc808c34a953417c879e2818d739c
 
 End sec_ABC.
 
@@ -126,25 +137,39 @@ Fixpoint eqnatb n1 n2 :=
 
 Lemma eqnatb_eq_1 : forall n, eqnatb n n = true.
 Proof.
+<<<<<<< HEAD
   intro a.
   induction a.
   -cbn[eqnatb]. reflexivity.
   -cbn[eqnatb]. rewrite IHa.
    reflexivity.
+=======
+  intro n. induction n.
+  - cbn [eqnatb]. reflexivity.
+  - cbn [eqnatb]. rewrite IHn. reflexivity.
+>>>>>>> 06e430f274fdc808c34a953417c879e2818d739c
 Qed.
 
 Lemma eqnatb_eq : forall n1 n2, n1 = n2 -> eqnatb n1 n2 = true.
 Proof.
   (* À compléter en utilisant le lemme précédent. *)
+<<<<<<< HEAD
   intros a b c.
   rewrite c.
   apply eqnatb_eq_1.
    
+=======
+  intros n1 n2.
+  intro c. Show Proof.
+  destruct c. Show Proof.
+  apply eqnatb_eq_1.
+>>>>>>> 06e430f274fdc808c34a953417c879e2818d739c
 Qed.
 
 (* Facultatif : preuve directe sans utiliser eqnatb_eq_1 *)
 Lemma eqnatb_eq_direct : forall n1 n2, n1 = n2 -> eqnatb n1 n2 = true.
 Proof.
+<<<<<<< HEAD
   intros a b c.
   induction a.
   -induction b.
@@ -153,6 +178,8 @@ Proof.
   -induction b.
    +rewrite c. reflexivity.
    +induction c.
+=======
+>>>>>>> 06e430f274fdc808c34a953417c879e2818d739c
   (* À compléter: utiliser clear avant induction. *)
   (* La tactique clear [hy] retire l'hypothèse [hy] du but. *)
 
@@ -182,9 +209,15 @@ Proof.
       en utilisant la tactique [change] *)
   (* À compléter *)
   (* change (... 5 ... = ... 4 ...). *)
+<<<<<<< HEAD
   change (3*5=3*4).
   rewrite e.reflexivity.
 Qed.
+=======
+  change (10 + 5 = 8 + 4).
+  
+Admitted.
+>>>>>>> 06e430f274fdc808c34a953417c879e2818d739c
 
 (* facultatif *)
 Lemma true_false_eg : true = false -> forall n1 n2 : nat, n1 = n2.
@@ -193,6 +226,11 @@ Proof.
   (** Definir une fonction f tq [f true = n1] et [f false = n2]   *)
   (* À compléter *)
   (* pose (f (b:bool) := ... *)
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 06e430f274fdc808c34a953417c879e2818d739c
 Admitted.
 
 (*** 2.2.2 Réciproque de 2.1 *)
@@ -201,11 +239,18 @@ Admitted.
 Lemma eq_eqnatb : forall n1 n2, eqnatb n1 n2 = true -> n1 = n2.
 Proof.
   (* À compléter *)
+<<<<<<< HEAD
   intros a b.
   induction a.
   induction b. Undo b.
   -reflexivity.
   -Show Proof.
+=======
+  intros n1 n2.
+  intro eq.
+  induction n1.
+
+>>>>>>> 06e430f274fdc808c34a953417c879e2818d739c
 Admitted.
 
 (** ** 2.3 Équivalence, tactique split *)

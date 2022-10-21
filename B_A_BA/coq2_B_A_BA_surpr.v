@@ -40,6 +40,7 @@ Definition coul_suiv3 : coulfeu -> coulfeu.
 Proof.
   intro c. Undo 1.
   refine (fun c => _).
+  (** refine (code d'un pgm incomplet)  _ -> joker**)
   destruct c as [ (*Vert*) | (*Orange*) | (*Rouge*) ]. Undo 1.
   refine (match c with
           | Vert => _
@@ -60,10 +61,11 @@ Proof.
             | Orange => Rouge
             | Rouge => _
             end).
+  Show Proof.
   - refine Orange.
   - refine Vert.
 Defined.
-
+Print coul_suiv3.
 (** Et pour les théorèmes ? *)
 
 (**
@@ -80,6 +82,6 @@ Proof.
   intros c deux_cas.
   destruct deux_cas as [cv | co].
   - rewrite cv. cbn [coul_suiv]. right. reflexivity.
-  - left. rewrite co. cbn. reflexivity.
+  - rewrite co. left. cbn [coul_suiv]. reflexivity.
 Show Proof. (* un peu saoûlant, mais on voit l'architecture du programme *)
 Qed.

@@ -21,20 +21,17 @@ le raisonnement formalisé en Coq, soit avant, soit a posteriori.
     Cst (pour les naturels), Apl et Amu pour l'addition et la multiplication *)
 
 Inductive aexp : Set :=
-|Cst: nat -> aexp
-|Apl: aexp -> aexp -> aexp
-|Asub: aexp -> aexp -> aexp
-|Amu: aexp -> aexp -> aexp.  
-(* à compléter *)
-
+| Cst: nat -> aexp
+| Apl : aexp -> aexp -> aexp
+| Amu : aexp -> aexp -> aexp.
 
 (* Définir les expressions aexp correspondant à
   (1 + 2) * 3 et  (1 * 2) + 3
  *)
 
-Definition exp_1 := (* à compléter *) Amu (Apl (Cst 1) (Cst 2)) (Cst 3).
+Definition exp_1 := Amu (Apl (Cst 1) (Cst 2)) (Cst 3). 
 
-Definition exp_2 := (* à compléter *) Apl (Amu (Cst 1) (Cst 2)) (Cst 3).
+Definition exp_2 :=  Apl (Amu (Cst 1) (Cst 2)) (Cst 3).
 
 (** Définir en Coq la fonction d'évaluation sémantique fonctionnelle Sf de aexp
     en utilisant les operateurs arithmétiques de Coq sur le type nat : + *       *)
@@ -42,17 +39,17 @@ Definition exp_2 := (* à compléter *) Apl (Amu (Cst 1) (Cst 2)) (Cst 3).
 Fixpoint eval (a: aexp) : nat :=
   match a with
   | Cst n => n
-               (* à compléter *)
-  |Apl n m => eval n + eval m
-  |Asub n m =>eval n - eval m
-  |Amu n m => eval n * eval m
-                  
+  | Apl e1 e2 => (eval e1) + (eval e2)
+  | Amu e1 e2 => (eval e1) * (eval e2)
   end.
+               
 
 (** Evaluer avec Eval ou Compute la sémantique de exp_1 et exp_2 *)
-Eval compute in (eval exp_1).
+
 (* à compléter *)
-Eval compute in (eval exp_2).
+Eval compute in (eval exp_1).
+Compute (eval exp_2).
+
 (** Nombre de feuilles *)
 
 (** Définir en Coq la fonction de calcul du nombre de feuilles dans un
@@ -61,12 +58,14 @@ Eval compute in (eval exp_2).
 
 Fixpoint nbf (a:aexp) :=
   match a with
-  |Cst n => 1
-  |Apl n m => nbf n + nbf m
-  |Asub n m => nbf n + nbf m
-  |Amu n m => nbf n + nbf m                     
-  (* à compléter *)
+    (* à compléter *)
+    | Cst n => 1
+    | Apl e1 e2 => nbf e1 + nbf e2
+    | Amu e1 e2 => nbf e1 + nbf e2
   end.
+
+Compute (nbf exp_1).
+Compute (nbf exp_2).
 
 (** ** Raisonnement par cas sur un AST *)
 
@@ -79,11 +78,10 @@ Fixpoint nbf (a:aexp) :=
 
 Definition categorise (a:aexp) :=
   match a with
-  |Cst n => Cst 1
-  |Apl n m => Cst 2
-  |Amu n m => Cst 3
-  |Asub n m => Cst 4
-  (* à compléter *)
+    (* à compléter *)
+    | Cst n => Cst 1
+    | Apl e1 e2 => Cst 2
+    | Amu e1 e2 => Cst 3
   end.
 
 (** Démontrer que le résultat de la fonction précédente
@@ -93,13 +91,14 @@ Definition categorise (a:aexp) :=
 
 Lemma nbf_cat : forall a, nbf (categorise a) = 1.
 Proof.
-  (* à compléter *)
-  intro c0.
-  destruct c0 as [ (*Cst*) | (*Amu*) | (*Apl*) | (*Asub*) ].
-  cbn [nbf]. reflexivity.
-  cbn [nbf]. reflexivity.
-  cbn [nbf]. reflexivity.
-  cbn [nbf]. reflexivity.
+(* à compléter *)
+  intro a0.
+  destruct a0 as [(*Cst*) n |
+                   (*Apl*) e1 e2 |
+                   (*Amu*) e1 e2].
+  - cbn [categorise]. cbn [nbf]. reflexivity.
+  - cbn [categorise]. cbn [nbf]. reflexivity.
+  - cbn [categorise]. cbn [nbf]. reflexivity.
 Qed.
 
 (** Nombre d'opérateurs *)
@@ -110,12 +109,14 @@ Qed.
 
 Fixpoint nbo (a:aexp) :=
   match a with
-  |Cst n => 0
-  |Amu n m => nbo n + 1 + nbo m
-  |Asub n m =>  nbo n + 1 + nbo m
-  |Apl n m => nbo n + 1 + nbo m
-  (* à compléter *)
+    (* à compléter *)
+    | Cst n => 0
+    | Apl e1 e2 => nbo e1 + 1 + nbo e2
+    | Amu e1 e2 => nbo e1 + 1 + nbo e2
   end.
+
+Compute (nbo exp_1).
+Compute (nbo exp_2).
 
 (** Démontrer la relation entre nbf et nbo par récurrence structurelle *)
 
@@ -129,31 +130,12 @@ Proof.
   intro a.
   induction a as [ (*Cst*) n
                  | (*Apl*) e1 Hrec_e1 e2 Hrec_e2
-                 | (*Amu*) e1 Hrec_e1 e2 Hrec_e2
-                 |(*Asub*) e1 Hrec_e1 e2 Hrec_e2
-    ].
-  -cbn [nbo].
-  cbn [nbf]. reflexivity.
- 
-  -cbn [nbf].
-   cbn [nbo].
-   rewrite Hrec_e2.
-   rewrite Hrec_e1.
-   rewrite add_assoc.
-   reflexivity.
-  -cbn [nbf].
-   cbn [nbo].
-   rewrite Hrec_e2.
-   rewrite Hrec_e1.
-   rewrite add_assoc.
-   reflexivity.
-  -cbn [nbf].
-   cbn [nbo].
-   rewrite Hrec_e2.
-   rewrite Hrec_e1.
-   rewrite add_assoc.
-   reflexivity.
+                 | (*Amu*) e1 Hrec_e1 e2 Hrec_e2 ].
+
   (* à compléter *)
+  - cbn [nbf]. cbn [nbo]. reflexivity.
+  - cbn [nbf]. cbn [nbo].  rewrite Hrec_e1. rewrite Hrec_e2. rewrite add_assoc. reflexivity.
+  - cbn [nbf]. cbn [nbo]. rewrite Hrec_e1. rewrite Hrec_e2. rewrite add_assoc. reflexivity.
 Qed.
 
 (** Transformation d'expressions *)
@@ -165,57 +147,32 @@ Qed.
  *)
 
 Fixpoint transform (a:aexp) :=
-  match a with
-  |Cst n => Cst 1
-  |Amu n m => Apl (transform n) (transform m)
-  |Asub n m => Apl (transform n) (transform m)
-  |Apl n m => Apl (transform n) (transform m)
-  end.
-    
   (* à compléter *)
-
+  match a with
+  | Cst n => Cst 1
+  | Apl e1 e2 => Apl (transform e1) (transform e2)
+  | Amu e1 e2 => Apl (transform e1) (transform e2)
+  end.
 (** Évaluer la fonction transform sur les expressions exp_1 et exp_2 *)
 
 (* à compléter *)
-    Eval compute in (transform exp_1).
-
-    Eval compute in (transform exp_2).
-
-    
+Compute (transform exp_1).
+Compute (transform exp_2).
+Compute (eval (transform exp_1)).
+Compute (nbf (exp_1)).
 (** Montrer maintenant que l'évaluation de transform e donne le nombre
  * de feuilles de e (nbf e). *)
 
-    
 Lemma eval_transform_nbf : forall a, eval (transform a) = nbf a.
 Proof.
-  intro c0.
-  induction c0 as [(*Cst*) n
-               | (*Amu*) e1 Hrec_e1 e2 Hrec_e2
-               | (*Apl*) e1 Hrec_e1 e2 Hrec_e2
-               |(*Asub*) e1 Hrec_e1 e2 Hrec_e2
-    ].
-  -cbn [transform].
-   cbn [eval].
-   cbn [nbf]. reflexivity.
-  -cbn [transform].
-   cbn [eval].
-   cbn [nbf].
-   rewrite Hrec_e1.
-   rewrite Hrec_e2.
-   reflexivity.
-  -cbn [transform].
-   cbn [eval].
-   cbn [nbf].
-   rewrite Hrec_e1.
-   rewrite Hrec_e2.
-   reflexivity.
-  -cbn [transform].
-   cbn [eval].
-   cbn [nbf].
-   rewrite Hrec_e1.
-   rewrite Hrec_e2.
-   reflexivity.
   (* à compléter *)
+  intro a0.
+  induction a0 as [(*Cst*) n 
+                   |(*Apl*) e1 Hrec_e1 e2 Hrec_e2 
+                   |(*Amu*) e1 Hrec_e1 e2 Hrec_e2].
+  - cbn [transform]. cbn [eval]. cbn [nbf]. reflexivity.
+  - cbn [transform]. cbn [eval]. cbn [nbf]. rewrite Hrec_e1. rewrite Hrec_e2. reflexivity.  
+  - cbn [transform]. cbn [eval]. cbn [nbf]. rewrite Hrec_e1. rewrite Hrec_e2. reflexivity.
 Qed.
 
 (** Simplification d'expressions *)
@@ -225,13 +182,11 @@ Qed.
 Definition simpl0 (a:aexp) :=
   match a with
   (* à compléter *)
-  |Cst n => Cst n
-  |Amu n e => match n with Cst 0 => 0 | _
-  |Asub n e => Cst n - Cst e
-  |Apl n e => match n with Cst 0 => e | _
+  | Apl (Cst 0) e2 => e2
+  | Amu (Cst 0) e2 => Cst 0
   (* fin de zone à compléter *)
-  | _ => a                             
-end.
+  | _ => a
+  end.
 
 (* ------------------------------------------------------------------------------- *)
 (*                     LΑ SUITE EST FACULTATIVE POUR LE DM.                        *)
@@ -264,18 +219,30 @@ Lemma eval_simpl0: forall a, eval (simpl0 a) = eval a.
 Proof.
   intro a. cas_simpl0 a.
   - cbn [simpl0]. cbn [eval]. rewrite add_0_l. reflexivity.
-  (* à compléter *)
-Admitted.
+    (* à compléter *)
+  - cbn [simpl0]. cbn [eval]. rewrite mul_0_l. reflexivity.  
+Qed.
 
 (* écrire la fonction simpl_rec qui applique récursivement simpl0 à toutes les sous-expressions. *)
 
 Fixpoint simpl_rec (a:aexp) :=
   (* à compléter *)
+  match a with
+  | Cst n => Cst n
+  | Apl e1 e2 => simpl0 (Apl (simpl_rec e1) (simpl_rec e2))
+  | Amu e1 e2 => simpl0 (Amu (simpl_rec e1) (simpl_rec e2))
+  end.
 
 (* Prouver que simpl_rec préserve l'évaluation des expressions *)
 
 Lemma eval_simpl_rec: forall a, eval(simpl_rec a) = eval a.
 Proof.
   (* à compléter *)
+  intro a0.
+  induction a0 as [(*Cst*) n
+                 | (*Apl*) e1 Hrec_e1 e2 Hrec_e2
+                 |(*Amu*) e1 Hrec_e1 e2 Hrec_e2].
+  - cbn [simpl_rec]. reflexivity.
+  - cbn [simpl_rec]. 
 Admitted.
 
