@@ -196,8 +196,10 @@ Proof.
   (** Definir une fonction f tq [f true = n1] et [f false = n2]   *)
   (* À compléter *)
   (* pose (f (b:bool) := ... *)
-
-Admitted.
+  pose(convert (x:bool) := if x then n1 else n2).
+  change (convert true = convert false).
+  rewrite etf. reflexivity.
+Qed.
 
 (*** 2.2.2 Réciproque de 2.1 *)
 (** Dans l'exercice ci-dessous, il faut bien identifier la propriété de n1
@@ -205,13 +207,23 @@ Admitted.
 Lemma eq_eqnatb : forall n1 n2, eqnatb n1 n2 = true -> n1 = n2.
 Proof.
   (* À compléter *)
-  intros a b.
-  induction a.
-  induction b.
-  -reflexivity.
-  -Show Proof.
-
-Admitted.
+  intros n1.
+  induction n1 as [|a rec_a].
+  -intro n2. induction n2 as [|b rec_b].
+   cbn[eqnatb]. reflexivity.
+   cbn[eqnatb]. intro eq.
+   pose (BoolToNat (x:bool) := if x then 0 else (S b)).
+   change(BoolToNat true = BoolToNat false).
+   rewrite eq. reflexivity.
+  -intro n2. induction n2 as [|b rec_b].
+   cbn[eqnatb]. intro eq.
+   pose (BoolToNat (x:bool) := if x then 0 else (S a)).
+   change(BoolToNat false = BoolToNat true).
+   rewrite eq. reflexivity.
+   cbn[eqnatb]. intro eq.
+   rewrite (rec_a b). reflexivity.
+   rewrite eq. reflexivity.
+Qed.
 
 (** ** 2.3 Équivalence, tactique split *)
 
@@ -224,7 +236,7 @@ Lemma eq_iff_eqnatb : forall n1 n2, eqnatb n1 n2 = true <-> n1 = n2.
 Proof.
   split.
   (* À compléter *)
-
-
-Admitted.
+  apply eq_eqnatb.
+  apply eqnatb_eq_direct.
+Qed.
 
