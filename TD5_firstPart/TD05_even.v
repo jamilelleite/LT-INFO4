@@ -36,10 +36,13 @@ Fail Inductive coulfeu : Set :=
 .
 
 Definition ATTENTION_QUESTION_EN_COMMENTAIRE_1 : bool.
+Proof.
+  
 (**
 Pourquoi interdire à un constructeur d'être dans des types inductifs différents ?
  *)
 (* Répondre ici
+Pour ne pas créer d'ambiguïté en utilisant le constructeur concerné
  *)
 Admitted.
 
@@ -96,14 +99,26 @@ Qed.
 
 (* Inductive boivr à compléter *)
 
-Inductive boivr : coul -> Prop :=.
+Inductive boivr : coul -> Prop :=
+|Fble : boivr bleu
+|Foran : boivr orange
+|Findi : boivr indigo
+|Fvert : boivr vert
+|Froug : boivr rouge
+.
 
 (** Démontrer ensuite : *)
 
 Lemma estCoulfeu_boivr : forall c, estCoulfeu c -> boivr c.
 Proof.
   (** compléter *)
-Admitted.
+  intro c.
+  intro ecf.
+  destruct ecf as [(*Fver*) | (*Fora*) | (*Frou*)].
+  -apply Fvert.
+  -apply Foran.
+  -refine Froug.
+Qed.
 
 (** ** Relations à 2 arguments sur un type énuméré *)
 
@@ -123,7 +138,12 @@ Inductive coulsuiv : coul -> coul -> Prop :=
 Lemma coulsuiv_estCoulfeu : forall c1 c2, coulsuiv c1 c2 -> estCoulfeu c1.
 Proof.
   (** compléter *)
-Admitted.
+  intros a b c.
+  destruct c as [(*Fver*) | (*Fora*) | (*Frou*)].
+  - apply Fver.
+  - apply Fora.
+  - apply Frou. 
+Qed.
 
 (** ** Prédicat even sur nat *)
 
@@ -144,7 +164,10 @@ Proof.
   apply (E2 6).
   apply E2.
   (** compléter *)
-Admitted.
+  apply E2.
+  apply E2.
+  apply E0.
+Qed.
 
 Print ev10.
 
@@ -154,6 +177,8 @@ Definition ATTENTION_QUESTION_EN_COMMENTAIRE_2 : bool.
     - quel est le type et la signification de E2 5 ?
 *)
 (* Répondre ici
+E2 4: Prop. C'est une soustraction de 2 depuis 6
+E2 5: Prop. C'est une soustraction de 2 depuis 7
  *)
 Admitted.
 
@@ -169,17 +194,29 @@ Inductive p2p7 : nat -> Prop :=
 Example p2p7_11_methode1 : p2p7 11.
 Proof.
   (** Compléter ici *)
-Admitted.
+  refine (PP7 4 _).
+  apply PP2.
+  apply PP2.
+  apply PP0.
+Qed.
 
 Example p2p7_11_methode2 : p2p7 11.
 Proof.
   (** Compléter ici *)
-Admitted.
+  refine (PP2 9 _).
+  apply PP7.
+  apply PP2.
+  apply PP0.
+Qed.
 
 Example p2p7_11_methode23 : p2p7 11.
 Proof.
   (** Compléter ici *)
-Admitted.
+  refine (PP2 9 _).
+  apply PP2.
+  apply PP7.
+  apply PP0.
+Qed.
 
 Print p2p7_11_methode2.
 
@@ -225,7 +262,13 @@ Lemma even_plus : forall n m, even n -> even m -> even (n + m).
 Proof.
   intros n m evn evm.
   (** Compléter par récurrence structurelle sur evn *)
-Admitted.
+  induction evn as [ (*E0*) | (*E2*) n' evn' Hrec_evn'].
+  induction evm as [ (*E0*) | (*E2*) m' evm' Hrec_evm'].
+  -apply E0.
+  -apply E2.
+    apply evm'.
+  - change (p2p7 (2 + n') + E2).
+Qed.
 
 (** Exercice facultatif :
     en donner une preuve sous forme de fonction. *)
