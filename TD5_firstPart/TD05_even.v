@@ -263,11 +263,10 @@ Proof.
   intros n m evn evm.
   (** Compléter par récurrence structurelle sur evn *)
   induction evn as [ (*E0*) | (*E2*) n' evn' Hrec_evn'].
-  induction evm as [ (*E0*) | (*E2*) m' evm' Hrec_evm'].
-  -apply E0.
-  -apply E2.
-    apply evm'.
-  - change (p2p7 (2 + n') + E2).
+  -refine (evm).
+  - change(even (S (S (n'+m)))).  apply E2.
+    apply Hrec_evn'.
+  
 Qed.
 
 (** Exercice facultatif :
@@ -287,4 +286,9 @@ Lemma mul4_even : forall n, mul4 n -> even n.
 Proof.
   intros n m4n.
   (** Terminer par récurrence structurelle sur [m4n] *)
-Admitted.
+  induction m4n as [(*M4_0*) | (*M4_4*)].
+  - apply (E0).
+  - apply E2.
+    apply E2.
+    apply IHm4n.
+Qed.
